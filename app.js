@@ -23,6 +23,64 @@ if (!visitor) {
 }
 let mine = new Set(JSON.parse(localStorage.getItem("soul_interests") || "[]"));
 
+
+function guidePrice(value) {
+  if (value === null || value === undefined || value === "") return "";
+  const number = Number(value);
+  return Number.isFinite(number) ? "¥" + number.toLocaleString("ja-JP") : esc(value);
+}
+
+function renderGuide() {
+  const enabled = settings.guide_enabled === "true";
+  $("guide").classList.toggle("hidden", !enabled);
+  if (!enabled) return;
+
+  $("guideTitle").textContent = settings.guide_title || "お迎えについて";
+  $("guideIntro").textContent = settings.guide_intro || "";
+
+  const plans = [1, 2, 3].map((number) => {
+    const n = String(number).padStart(2, "0");
+    return {
+      label: "PLAN " + n,
+      name: settings["plan" + n + "_name"] || "",
+      price: settings["plan" + n + "_price"] || "",
+      note: settings["plan" + n + "_note"] || "",
+    };
+  }).filter((plan) => plan.name || plan.price || plan.note);
+
+  $("guidePlans").innerHTML = plans.map((plan) =>
+    '<div class="guide-plan-row">' +
+      '<div class="guide-plan-label">' + esc(plan.label) + '</div>' +
+      '<div class="guide-plan-main"><strong>' + esc(plan.name) + '</strong>' +
+      (plan.note ? '<span>' + esc(plan.note) + '</span>' : '') + '</div>' +
+      '<div class="guide-plan-price">' + guidePrice(plan.price) + '</div>' +
+    '</div>'
+  ).join("");
+
+  const specialName = settings.guide_special_name || "";
+  const specialPrice = settings.guide_special_price || "";
+  const specialNote = settings.guide_special_note || "";
+  const showSpecial = Boolean(specialName || specialPrice || specialNote);
+  $("guideSpecial").classList.toggle("hidden", !showSpecial);
+  if (showSpecial) {
+    $("guideSpecial").innerHTML =
+      '<div><span class="guide-special-kicker">SPECIAL</span><strong>' + esc(specialName) + '</strong>' +
+      (specialNote ? '<p>' + esc(specialNote) + '</p>' : '') + '</div>' +
+      '<div class="guide-special-price">' + guidePrice(specialPrice) + '</div>';
+  }
+
+  $("guideScheduleTitle").textContent = settings.guide_schedule_title || "制作時期";
+  $("guideScheduleText").textContent = settings.guide_schedule_text || "";
+  $("guideRightsTitle").textContent = settings.guide_rights_title || "制作権";
+  $("guideRightsText").textContent = settings.guide_rights_text || "";
+  $("guideUsageTitle").textContent = settings.guide_usage_title || "ご利用について";
+  $("guideUsageText").textContent = settings.guide_usage_text || "";
+
+  const footnote = settings.guide_footnote || "";
+  $("guideFootnote").textContent = footnote;
+  $("guideFootnote").classList.toggle("hidden", !footnote);
+}
+
 function applySettings() {
   const root = document.documentElement;
   root.style.setProperty("--accent", settings.accent_color || "#6c5cff");
@@ -51,6 +109,8 @@ function applySettings() {
       'linear-gradient(#ffffffb8,#ffffffb8),url("' + safeUrl + '")',
     );
   }
+  renderGuide();
+
   const url = settings.form_url || "";
   [$("contactButton"), $("headerContact")].forEach((link) => {
     if (url) {

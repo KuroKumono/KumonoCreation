@@ -1,10 +1,143 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet"><title>魂募集｜管理画面</title><link rel="stylesheet" href="./admin.css"><link rel="stylesheet" href="./admin-media.css"></head>
-<body><main class="shell"><section class="box"><a class="brand" href="./index.html">← 公開ページ</a>
-<div id="checking"><h1>確認中</h1></div><div id="login" class="hidden"><h1>管理者ログイン</h1><p class="muted">登録した管理者メールアドレスだけが利用できます。</p><label>メールアドレス<input id="email" type="email"></label><button id="send" class="btn">ログインリンクを送る</button><p id="loginMessage" class="message"></p></div>
-<div id="denied" class="hidden"><h1>アクセスできません</h1><button id="deniedLogout" class="btn sub">ログアウト</button></div>
-<div id="editor" class="hidden"><div class="toolbar"><div><h1>サイト管理</h1><p class="muted">設定とキャラクターは保存後すぐに公開ページへ反映されます。</p></div><button id="logout" class="btn sub">ログアウト</button></div>
-<nav><button class="tab active" data-panel="settings">サイト設定</button><button class="tab" data-panel="characters">キャラクター</button><button class="tab" data-panel="analytics">アクセス解析</button></nav>
-<section id="settingsPanel"><form id="settingsForm" class="form"><label>サイト名<input id="siteName" required></label><label>ページタイトル<input id="siteTitle" required></label><label class="full">紹介文<textarea id="siteDescription"></textarea></label><label class="full">問い合わせフォームURL<input id="formUrl" type="url" placeholder="https://forms.gle/..."></label><label>アクセントカラー<input id="accentColor" type="color" value="#6c5cff"></label><label>カードの枠<select id="frameStyle"><option value="soft">やわらかい角丸</option><option value="line">細い四角枠</option><option value="shadow">影付き</option><option value="minimal">枠なし</option></select></label><label class="full">ショップアイコン<input id="iconFile" type="file" accept="image/png,image/jpeg,image/webp"></label><label class="full">背景画像<input id="backgroundFile" type="file" accept="image/png,image/jpeg,image/webp"></label><button class="btn full">サイト設定を保存</button></form><p id="settingsMessage" class="message"></p></section>
-<section id="charactersPanel" class="hidden"><div class="section-head"><h2>キャラクター</h2><button id="newCharacter" class="btn sub">新規登録</button></div><div id="characterList" class="list"></div><form id="characterForm" class="form"><input id="originalId" type="hidden"><label>名前・番号<input id="characterName" placeholder="No.01" required></label><label>表示順<input id="displayOrder" type="number" min="1" required></label><label class="full">詳細<textarea id="description"></textarea></label><p class="muted full">各料金はキャラクターごとに自由に設定できます。使用しない料金は空欄にしてください。</p><label>立ち絵料金<input id="illustrationPrice" type="number" min="0" placeholder="例：150000"></label><label>Live2D料金<input id="live2dPrice" type="number" min="0" placeholder="例：250000"></label><label>フルセット料金<input id="fullPrice" type="number" min="0" placeholder="例：300000"></label><label>募集状況<select id="status"><option value="preparing">準備中</option><option value="available">募集中</option><option value="sold">SOLD OUT</option></select></label><label class="full">料金の補足<input id="priceNote" placeholder="分割払い相談可 など"></label><label>公開設定<select id="isPublished"><option value="true">掲載する</option><option value="false">非掲載</option></select></label><label class="full">一覧画像（顔）<input id="faceFile" type="file" accept="image/png,image/jpeg,image/webp"></label><label class="full">詳細画像（全身）<input id="fullFile" type="file" accept="image/png,image/jpeg,image/webp"></label><label class="full">動き確認用動画（任意）<input id="videoFile" type="file" accept="video/mp4,video/webm"><span class="field-help">MP4またはWebM・50MBまで。動画なしでも掲載できます。</span></label><label id="removeVideoLabel" class="check full hidden"><input id="removeVideo" type="checkbox">登録済みの動画を削除する</label><p id="videoStatus" class="muted full"></p><button class="btn full">保存する</button></form><p id="characterMessage" class="message"></p></section>
-<section id="analyticsPanel" class="hidden"><div class="section-head"><h2>アクセス解析</h2><select id="analyticsPeriod"><option value="7d">7日</option><option value="30d" selected>30日</option><option value="all">全期間</option></select></div><div id="kpis" class="kpis"></div><div class="table-wrap"><table><thead><tr><th>キャラクター</th><th>詳細表示</th><th>気になる</th><th>問い合わせ</th></tr></thead><tbody id="analyticsRows"></tbody></table></div><p id="analyticsMessage" class="message"></p></section>
-</div></section></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./config.js"></script><script src="./admin.js"></script></body></html>
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <title>魂募集｜管理画面</title>
+  <link rel="stylesheet" href="./admin.css">
+  <link rel="stylesheet" href="./admin-media.css">
+</head>
+<body>
+  <main class="shell">
+    <section class="box">
+      <a class="brand" href="./index.html">← 公開ページ</a>
+
+      <div id="checking"><h1>確認中</h1></div>
+
+      <div id="login" class="hidden">
+        <h1>管理者ログイン</h1>
+        <p class="muted">登録した管理者メールアドレスだけが利用できます。</p>
+        <label>メールアドレス<input id="email" type="email"></label>
+        <button id="send" class="btn">ログインリンクを送る</button>
+        <p id="loginMessage" class="message"></p>
+      </div>
+
+      <div id="denied" class="hidden">
+        <h1>アクセスできません</h1>
+        <button id="deniedLogout" class="btn sub">ログアウト</button>
+      </div>
+
+      <div id="editor" class="hidden">
+        <div class="toolbar">
+          <div>
+            <h1>サイト管理</h1>
+            <p class="muted">設定とキャラクターは保存後すぐに公開ページへ反映されます。</p>
+          </div>
+          <button id="logout" class="btn sub">ログアウト</button>
+        </div>
+
+        <nav>
+          <button class="tab active" data-panel="settings">サイト設定</button>
+          <button class="tab" data-panel="characters">キャラクター</button>
+          <button class="tab" data-panel="analytics">アクセス解析</button>
+        </nav>
+
+        <section id="settingsPanel">
+          <form id="settingsForm" class="form">
+            <div class="form-divider full">
+              <strong>基本設定</strong>
+              <span>サイト全体のタイトル・色・問い合わせ先</span>
+            </div>
+            <label>サイト名<input id="siteName" required></label>
+            <label>ページタイトル<input id="siteTitle" required></label>
+            <label class="full">紹介文<textarea id="siteDescription"></textarea></label>
+            <label class="full">問い合わせフォームURL<input id="formUrl" type="url" placeholder="https://forms.gle/..."></label>
+            <label>アクセントカラー<input id="accentColor" type="color" value="#6c5cff"></label>
+            <label>カードの枠<select id="frameStyle"><option value="soft">やわらかい角丸</option><option value="line">細い四角枠</option><option value="shadow">影付き</option><option value="minimal">枠なし</option></select></label>
+            <label class="full">ショップアイコン<input id="iconFile" type="file" accept="image/png,image/jpeg,image/webp"></label>
+            <label class="full">背景画像<input id="backgroundFile" type="file" accept="image/png,image/jpeg,image/webp"></label>
+
+            <div class="form-divider full">
+              <strong>お迎えガイド</strong>
+              <span>公開ページの「キャラクター」と「お問い合わせ」の間に表示されます。</span>
+            </div>
+            <label>ガイド表示<select id="guideEnabled"><option value="false">非表示</option><option value="true">表示する</option></select></label>
+            <label>見出し<input id="guideTitleInput" placeholder="お迎えについて"></label>
+            <label class="full">導入文<textarea id="guideIntroInput" placeholder="料金や制作条件についてご案内します。"></textarea></label>
+
+            <div class="subsection-title full">PLAN 01</div>
+            <label>プラン名<input id="plan01Name" placeholder="パーツ分け立ち絵"></label>
+            <label>料金<input id="plan01Price" type="number" min="0" placeholder="150000"></label>
+            <label class="full">補足<input id="plan01Note" placeholder="必要に応じて補足"></label>
+
+            <div class="subsection-title full">PLAN 02</div>
+            <label>プラン名<input id="plan02Name" placeholder="高可動域Live2D"></label>
+            <label>料金<input id="plan02Price" type="number" min="0" placeholder="250000"></label>
+            <label class="full">補足<input id="plan02Note" placeholder="必要に応じて補足"></label>
+
+            <div class="subsection-title full">PLAN 03</div>
+            <label>プラン名<input id="plan03Name" placeholder="フルセット"></label>
+            <label>料金<input id="plan03Price" type="number" min="0" placeholder="300000"></label>
+            <label class="full">補足<input id="plan03Note" placeholder="モデル・設定画・キービジュアルなど"></label>
+
+            <div class="subsection-title full">特別料金・追加案内</div>
+            <label>名称<input id="guideSpecialName" placeholder="Live2Dのみ特別価格"></label>
+            <label>料金<input id="guideSpecialPrice" type="number" min="0" placeholder="空欄でもOK"></label>
+            <label class="full">補足<input id="guideSpecialNote" placeholder="立ち絵持ち込みの場合など"></label>
+
+            <div class="subsection-title full">下部の3項目</div>
+            <label>項目1 見出し<input id="guideScheduleTitleInput" placeholder="制作時期"></label>
+            <label>項目2 見出し<input id="guideRightsTitleInput" placeholder="制作権"></label>
+            <label class="full">項目1 本文<textarea id="guideScheduleTextInput"></textarea></label>
+            <label>項目3 見出し<input id="guideUsageTitleInput" placeholder="ご利用について"></label>
+            <label class="full">項目2 本文<textarea id="guideRightsTextInput"></textarea></label>
+            <label class="full">項目3 本文<textarea id="guideUsageTextInput"></textarea></label>
+            <label class="full">最後の注意書き<textarea id="guideFootnoteInput" placeholder="任意。空欄なら表示されません。"></textarea></label>
+
+            <button class="btn full">サイト設定を保存</button>
+          </form>
+          <p id="settingsMessage" class="message"></p>
+        </section>
+
+        <section id="charactersPanel" class="hidden">
+          <div class="section-head"><h2>キャラクター</h2><button id="newCharacter" class="btn sub">新規登録</button></div>
+          <div id="characterList" class="list"></div>
+          <form id="characterForm" class="form">
+            <input id="originalId" type="hidden">
+            <label>名前・番号<input id="characterName" placeholder="No.01" required></label>
+            <label>表示順<input id="displayOrder" type="number" min="1" required></label>
+            <label class="full">詳細<textarea id="description"></textarea></label>
+            <p class="muted full">各料金はキャラクターごとに自由に設定できます。使用しない料金は空欄にしてください。</p>
+            <label>立ち絵料金<input id="illustrationPrice" type="number" min="0" placeholder="例：150000"></label>
+            <label>Live2D料金<input id="live2dPrice" type="number" min="0" placeholder="例：250000"></label>
+            <label>フルセット料金<input id="fullPrice" type="number" min="0" placeholder="例：300000"></label>
+            <label>募集状況<select id="status"><option value="preparing">準備中</option><option value="available">募集中</option><option value="sold">SOLD OUT</option></select></label>
+            <label class="full">料金の補足<input id="priceNote" placeholder="分割払い相談可 など"></label>
+            <label>公開設定<select id="isPublished"><option value="true">掲載する</option><option value="false">非掲載</option></select></label>
+            <label class="full">一覧画像（顔）<input id="faceFile" type="file" accept="image/png,image/jpeg,image/webp"></label>
+            <label class="full">詳細画像（全身）<input id="fullFile" type="file" accept="image/png,image/jpeg,image/webp"></label>
+            <label class="full">動き確認用動画（任意）<input id="videoFile" type="file" accept="video/mp4,video/webm"><span class="field-help">MP4またはWebM・50MBまで。動画なしでも掲載できます。</span></label>
+            <label id="removeVideoLabel" class="check full hidden"><input id="removeVideo" type="checkbox">登録済みの動画を削除する</label>
+            <p id="videoStatus" class="muted full"></p>
+            <button class="btn full">保存する</button>
+          </form>
+          <p id="characterMessage" class="message"></p>
+        </section>
+
+        <section id="analyticsPanel" class="hidden">
+          <div class="section-head"><h2>アクセス解析</h2><select id="analyticsPeriod"><option value="7d">7日</option><option value="30d" selected>30日</option><option value="all">全期間</option></select></div>
+          <div id="kpis" class="kpis"></div>
+          <div class="table-wrap"><table><thead><tr><th>キャラクター</th><th>詳細表示</th><th>気になる</th><th>問い合わせ</th></tr></thead><tbody id="analyticsRows"></tbody></table></div>
+          <p id="analyticsMessage" class="message"></p>
+        </section>
+      </div>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./config.js"></script>
+  <script src="./admin.js"></script>
+</body>
+</html>

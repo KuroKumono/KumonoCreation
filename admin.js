@@ -84,6 +84,28 @@ async function loadSettings() {
   $("formUrl").value = settings.form_url || "";
   $("accentColor").value = settings.accent_color || "#6c5cff";
   $("frameStyle").value = settings.frame_style || "soft";
+  $("guideEnabled").value = settings.guide_enabled || "false";
+  $("guideTitleInput").value = settings.guide_title || "お迎えについて";
+  $("guideIntroInput").value = settings.guide_intro || "";
+  $("plan01Name").value = settings.plan01_name || "パーツ分け立ち絵";
+  $("plan01Price").value = settings.plan01_price || "";
+  $("plan01Note").value = settings.plan01_note || "";
+  $("plan02Name").value = settings.plan02_name || "高可動域Live2D";
+  $("plan02Price").value = settings.plan02_price || "";
+  $("plan02Note").value = settings.plan02_note || "";
+  $("plan03Name").value = settings.plan03_name || "フルセット";
+  $("plan03Price").value = settings.plan03_price || "";
+  $("plan03Note").value = settings.plan03_note || "";
+  $("guideSpecialName").value = settings.guide_special_name || "";
+  $("guideSpecialPrice").value = settings.guide_special_price || "";
+  $("guideSpecialNote").value = settings.guide_special_note || "";
+  $("guideScheduleTitleInput").value = settings.guide_schedule_title || "制作時期";
+  $("guideScheduleTextInput").value = settings.guide_schedule_text || "";
+  $("guideRightsTitleInput").value = settings.guide_rights_title || "制作権";
+  $("guideRightsTextInput").value = settings.guide_rights_text || "";
+  $("guideUsageTitleInput").value = settings.guide_usage_title || "ご利用について";
+  $("guideUsageTextInput").value = settings.guide_usage_text || "";
+  $("guideFootnoteInput").value = settings.guide_footnote || "";
 }
 
 $("settingsForm").onsubmit = async (event) => {
@@ -101,13 +123,35 @@ $("settingsForm").onsubmit = async (event) => {
       frame_style: $("frameStyle").value,
       icon_url: icon,
       background_url: background,
+      guide_enabled: $("guideEnabled").value,
+      guide_title: $("guideTitleInput").value.trim(),
+      guide_intro: $("guideIntroInput").value.trim(),
+      plan01_name: $("plan01Name").value.trim(),
+      plan01_price: $("plan01Price").value,
+      plan01_note: $("plan01Note").value.trim(),
+      plan02_name: $("plan02Name").value.trim(),
+      plan02_price: $("plan02Price").value,
+      plan02_note: $("plan02Note").value.trim(),
+      plan03_name: $("plan03Name").value.trim(),
+      plan03_price: $("plan03Price").value,
+      plan03_note: $("plan03Note").value.trim(),
+      guide_special_name: $("guideSpecialName").value.trim(),
+      guide_special_price: $("guideSpecialPrice").value,
+      guide_special_note: $("guideSpecialNote").value.trim(),
+      guide_schedule_title: $("guideScheduleTitleInput").value.trim(),
+      guide_schedule_text: $("guideScheduleTextInput").value.trim(),
+      guide_rights_title: $("guideRightsTitleInput").value.trim(),
+      guide_rights_text: $("guideRightsTextInput").value.trim(),
+      guide_usage_title: $("guideUsageTitleInput").value.trim(),
+      guide_usage_text: $("guideUsageTextInput").value.trim(),
+      guide_footnote: $("guideFootnoteInput").value.trim(),
     };
     const rows = Object.entries(values).map(([key, value]) => ({
       key, value, updated_at: new Date().toISOString(),
     }));
     const { error } = await sb.from("site_settings").upsert(rows);
     if (error) throw error;
-    settings = values;
+    settings = { ...settings, ...values };
     $("settingsMessage").textContent = "保存しました。";
   } catch {
     $("settingsMessage").textContent = "保存できませんでした。管理者設定を確認してください。";

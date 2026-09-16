@@ -94,7 +94,17 @@ insert into public.site_settings(key,value) values
 ('site_name','あなたのブランド名'),('site_title','魂募集'),
 ('site_description','気になるキャラクターを見つけてください。'),
 ('form_url',''),('accent_color','#6c5cff'),('frame_style','soft'),
-('icon_url',''),('background_url','') on conflict(key) do nothing;
+('icon_url',''),('background_url',''),
+('guide_enabled','false'),('guide_title','お迎えについて'),
+('guide_intro','料金や制作条件についてご案内します。'),
+('plan01_name','パーツ分け立ち絵'),('plan01_price',''),('plan01_note',''),
+('plan02_name','高可動域Live2D'),('plan02_price',''),('plan02_note',''),
+('plan03_name','フルセット'),('plan03_price',''),('plan03_note','モデル・設定画・キービジュアルなど'),
+('guide_special_name',''),('guide_special_price',''),('guide_special_note',''),
+('guide_schedule_title','制作時期'),('guide_schedule_text',''),
+('guide_rights_title','制作権'),('guide_rights_text',''),
+('guide_usage_title','ご利用について'),('guide_usage_text',''),
+('guide_footnote','') on conflict(key) do nothing;
 
 create or replace function public.get_public_characters()
 returns jsonb language sql stable security definer set search_path=pg_catalog as $$
