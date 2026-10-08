@@ -287,4 +287,11 @@ $("dlg").addEventListener("close", () => $("dlgVideo").pause());
 $("dlgInterest").onclick = () => current && toggleInterest(current.id);
 $("dlgInquiry").onclick = () => current && track("inquiry_click", current.id);
 $("contactButton").onclick = () => track("inquiry_click");
-load();
+load()
+  .catch((error) => {
+    console.error('Site loading failed:', error);
+    $("grid").innerHTML = '<p class="muted">読み込みに失敗しました。</p>';
+  })
+  .finally(() => {
+    document.documentElement.classList.remove('site-loading');
+  });

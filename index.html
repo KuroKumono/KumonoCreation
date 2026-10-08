@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ja">
+<html lang="ja" class="site-loading">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -9,8 +9,26 @@
   <title>魂募集</title>
   <link rel="stylesheet" href="./style.css">
   <link rel="stylesheet" href="./media.css">
+  <!-- Wait to show site until settings have loaded to prevent initial template flash. -->
+  <style>
+    html.site-loading body > header,
+    html.site-loading body > main,
+    html.site-loading body > footer { visibility: hidden; }
+    #pageLoading { display: none; }
+    html.site-loading #pageLoading {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: grid;
+      place-items: center;
+      background: #fbfbfd;
+      color: #74747e;
+      font: 500 14px 'Zen Maru Gothic', sans-serif;
+    }
+  </style>
 </head>
 <body>
+  <div id="pageLoading" role="status" aria-live="polite">読み込み中…</div>
   <header class="top">
     <a id="brand" class="brand" href="#top">魂募集</a>
     <a id="headerContact" class="pill" href="#contact">お問い合わせ</a>
@@ -116,6 +134,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./config.js"></script>
-  <script src="./app.js"></script>
+  <script src="./app.js?v=20261008-flashfix"></script>
 </body>
 </html>
